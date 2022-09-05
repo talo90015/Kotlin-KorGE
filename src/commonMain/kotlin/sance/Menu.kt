@@ -1,28 +1,22 @@
 package sance
 
+import ConfigModule
 import com.soywiz.korge.input.*
 import com.soywiz.korge.scene.Scene
 import com.soywiz.korge.ui.*
 import com.soywiz.korge.view.*
 import com.soywiz.korge.view.onClick
+import com.soywiz.korim.format.*
 import com.soywiz.korio.async.*
+import com.soywiz.korio.file.std.*
 import com.soywiz.korma.geom.*
 
 class Menu() : Scene() {
-    val textPos = IPoint(128, 128)
-    val btnWidth = 256.0
-    val btnHeight = 32.0
-    val btnPos = IPoint(128, 128 + 32)
+
     override suspend fun SContainer.sceneInit() {
-        text("I,m in ${Menu::class.simpleName}"){
-            position(textPos)
-        }
-        uiTextButton(btnWidth, btnHeight) {
-            text = "Go GamePlay"
-            position(btnPos)
-            onClick {
-                launchImmediately { sceneContainer.changeTo<GamePlay>() }
-            }
+        image(resourcesVfs["menu_bg.png"].readBitmap()){
+            scaledWidth = ConfigModule.size.width.toDouble()
+            scaledHeight = ConfigModule.size.height.toDouble()
         }
     }
 }

@@ -9,20 +9,8 @@ import com.soywiz.korio.async.*
 import com.soywiz.korma.geom.*
 
 class Rank() : Scene() {
-    val textPos = IPoint(128, 128)
-    val btnWidth = 256.0
-    val btnHeight = 32.0
-    val btnPos = IPoint(128, 128 + 32)
+
     override suspend fun SContainer.sceneInit() {
-        text("I,m in ${Rank::class.simpleName}"){
-            position(textPos)
-        }
-        uiTextButton(btnWidth, btnHeight) {
-            text = "Go Menu"
-            position(btnPos)
-            onClick {
-                launchImmediately { sceneContainer.changeTo<Menu>() }
-            }
-        }
+
     }
 }

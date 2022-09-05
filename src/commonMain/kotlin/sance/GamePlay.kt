@@ -1,60 +1,59 @@
 package sance
 
-import ConfigModule
 import com.soywiz.klock.*
-import com.soywiz.korge.input.*
-import com.soywiz.korge.scene.*
-import com.soywiz.korge.tween.*
-import com.soywiz.korge.ui.*
+import com.soywiz.korev.Key
+import com.soywiz.korge.animate.*
+import com.soywiz.korge.input.keys
+import com.soywiz.korge.input.onClick
+import com.soywiz.korge.scene.Scene
 import com.soywiz.korge.view.*
-import com.soywiz.korge.view.onClick
-import com.soywiz.korim.format.*
-import com.soywiz.korio.async.*
 import com.soywiz.korio.async.delay
-import com.soywiz.korio.file.std.*
-import com.soywiz.korma.geom.*
-import java.io.ObjectInputFilter.Config
+import com.soywiz.korio.async.launch
+import com.soywiz.korio.async.launchImmediately
+import gameplay.*
 
-class GamePlay() : Scene() {
-    val textPos = IPoint(10, 450)
-    val btnWidth = 256.0
-    val btnHeight = 32.0
-    val btnPos = IPoint(128, 450)
-    override suspend fun SContainer.sceneInit() {
-        text("I,m in ${GamePlay::class.simpleName}"){
-            position(textPos)
+
+class GamePlay() : Scene(){
+
+    override suspend fun SContainer.sceneInit(){
+
+        addChild(Background().apply { load() })
+
+        val parentView = this
+        ItemManager.run {
+            init()
+            load(parentView)
         }
-        uiTextButton(btnWidth, btnHeight) {
-            text = "Go GameOver"
-            position(btnPos)
-            onClick {
-                launchImmediately { sceneContainer.changeTo<GameOver>() }
+        suspend fun loadCharacter(): Alien {
+            return Alien().apply {
+                load()
+                walk()
             }
         }
-        image(resourcesVfs["isLogo.png"].readBitmap()){
-            anchor(0.5, 0.5)
-            scaledWidth = ConfigModule.size.width.toDouble()
-            scaledHeight = ConfigModule.size.height.toDouble()
-            position(scaledWidth / 2, scaledHeight / 2)
+        val alien = Alien()
+        alien.apply {
+            load()
+            parentView.addChild(this)
+//            alignTopToBottomOf(ItemManager.baseFloor!!)
+            x = ItemManager.baseWidth
+            position(100.0, 395.0)
+//            defaultY = alien.y
+            walk()
         }
-        val spriteMap = resourcesVfs["green_alien_walk.png"].readBitmap()
-        val alienWalkAnimation = SpriteAnimation(
-            spriteMap = spriteMap,
-            spriteWidth = 72,
-            spriteHeight = 97,
-            marginTop = 0,
-            marginLeft = 0,
-            columns = 11,
-            rows = 1,
-            offsetBetweenColumns = 0,
-            offsetBetweenRows = 0
-        )
-        val alien = sprite(alienWalkAnimation)
-        alien.spriteDisplayTime = 0.1.seconds
-        alien.playAnimationLooped()
-        while (true){
-            alien.tween(alien::x[-100.0, 800.0], time = 5.seconds)
-            delay(1.seconds)
+//        alien = loadCharacter()
+//        alien.addChild(alien)
+//        alien.alignBottomToTopOf(ItemManager.baseFloor!!)
+//        alien.defaultY = alien.y
+//        alien.x = ItemManager.baseWidth
+
+        keys {
+            down (Key.UP){
+                alien.jump()
+            }
+        }
+        addUpdater{
+            ItemManager.move()
+            alien.update()
         }
     }
 }
