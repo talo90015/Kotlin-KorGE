@@ -6,7 +6,7 @@ import com.soywiz.korge.view.Image
 abstract class Item : Container(){
     val baseWidth= 70.0   //物件寬度
     val baseHeight = 70.0  //物件高度
-    var moveSpeed = 4    //移動速度
+    var moveSpeed = 3    //移動速度
     var defaultX = 0.0     //初始X軸位置
     var mImage: Image? = null   //物件圖片
 

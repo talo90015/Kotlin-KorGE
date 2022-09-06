@@ -19,15 +19,24 @@ class Alien : Container(){
         GOAL
     }
     var status = Status.WALK
+    var lastStatus = status
     lateinit var spriteMap: Bitmap
+    lateinit var hurtMap: Bitmap
     lateinit var jump: Bitmap
     lateinit var walkAnimation: SpriteAnimation
     lateinit var walkSprite: Sprite
+    lateinit var hurtAnimation: SpriteAnimation
     lateinit var sprite: Sprite
     var defaultY = 395.0
     suspend fun load() {
         spriteMap = resourcesVfs["green_alien_walk.png"].readBitmap()
         jump = resourcesVfs["green_alien_jump.png"].readBitmap()
+        hurtMap = resourcesVfs["green_alien_hurt.png"].readBitmap()
+        hurtAnimation = SpriteAnimation(
+            spriteMap = hurtMap,
+            spriteWidth = 72,
+            spriteHeight = 97
+        )
         walkAnimation = SpriteAnimation(
             spriteMap = spriteMap,
             spriteWidth = 72,
@@ -47,6 +56,27 @@ class Alien : Container(){
     fun changeStatus() {
         sprite.stopAnimation()
         sprite.removeFromParent()
+    }
+    fun hurt(): Boolean{
+        if (status == Status.HURT){
+            return false
+        }else{
+            changeStatus()
+            sprite = sprite(hurtAnimation){
+                spriteDisplayTime = 0.8.seconds
+            }.apply {
+                playAnimation(1)
+                onAnimationCompleted{
+                    status = lastStatus
+                    if (status == Status.WALK){
+                        walk()
+                    }
+                }
+            }
+            lastStatus = status
+            status = Status.HURT
+            return true
+        }
     }
     fun walk() {
         status = Status.WALK
@@ -80,6 +110,13 @@ class Alien : Container(){
                 if (y >= defaultY){
                     changeStatus()
                     walk()
+                }
+            }
+            Status.HURT ->{
+                if (sprite.alpha >0){
+                    sprite.alpha -= 0.1
+                }else if(sprite.alpha <= 0.5){
+                    sprite.alpha = 1.0
                 }
             }
             else -> {

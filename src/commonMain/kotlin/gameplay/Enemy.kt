@@ -6,7 +6,12 @@ import com.soywiz.korim.bitmap.*
 import com.soywiz.korim.format.*
 import com.soywiz.korio.file.std.*
 
+import com.soywiz.korim.color.Colors
+import com.soywiz.korma.geom.vector.*
+
 class Enemy : Item(){
+    val offsetX = 20.0
+    val offsetY = 10.0
     lateinit var spriteMap: Bitmap
     lateinit var walkAnimation: SpriteAnimation
     lateinit var walkSprite: Sprite
@@ -27,6 +32,9 @@ class Enemy : Item(){
             spriteDisplayTime = 0.1.seconds
         }
         walkSprite.playAnimationLooped()
+        hitShape {
+            rect(walkSprite.width - offsetX, walkSprite.height - offsetY, offsetX / 2, (walkSprite.height + offsetY) / 2)
+        }
     }
 
     override suspend fun position(x: Int, y: Int) {

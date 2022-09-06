@@ -1,15 +1,19 @@
 package gameplay
 
 import com.soywiz.korge.view.*
+import com.soywiz.korma.geom.shape.*
 
 object ItemManager {
     val baseWidth= 70.0   //物件寬度
     val baseHeight = 70.0  //物件高度
     var baseFloor: Floor? = null
-
-    var items = arrayListOf<Item?>()
+    var scoreItem = ArrayList<View>()
+    var hurtItem = ArrayList<View>()
+    var items = ArrayList<Item>()
     suspend fun init(){
         items.clear()
+        scoreItem.clear()
+        hurtItem.clear()
         val stageValue = listOf(
             0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
             0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -23,7 +27,8 @@ object ItemManager {
         var index = 0
         for (y in 0..7){
             for (x in 0..23){
-                val item = when(ItemType.values()[stageValue[index++]]){
+                val itemType = ItemType.values()[stageValue[index++]]
+                val item = when(itemType){
                     ItemType.FLOOR ->{
                         Floor().apply {
                             load()
@@ -48,11 +53,19 @@ object ItemManager {
                             position(x, y)
                         }
                     }
-                    else ->{
+                    ItemType.NONE ->{
                         null
                     }
                 }
-                items.add(item)
+                item?.also {
+                    if (itemType == ItemType.COIN){
+                        scoreItem.add(item.root)
+                    }
+                    if (itemType == ItemType.ENEMY || itemType == ItemType.OBSTACLE){
+                        hurtItem.add(item.root)
+                    }
+                    items.add(item)
+                }
             }
         }
     }
@@ -74,5 +87,31 @@ object ItemManager {
             it?.stop()
         }
     }
-
+    fun setCollision(alien: Alien, parentView: Container){
+        items.forEach {
+            when(it){
+                is Coin ->{
+                    it.addUpdater {
+                        if (collidesWith(alien.sprite)){
+                            parentView.removeChild(this)
+                        }
+                    }
+                }
+                is Enemy ->{
+                    it.addUpdater {
+                        if (collidesWithShape(alien.sprite)){
+                            hurtItem.remove(this)
+                        }
+                    }
+                }
+                is Obstacle ->{
+                    it.addUpdater {
+                        if (collidesWithShape(alien.sprite)){
+                            hurtItem.remove(this)
+                        }
+                    }
+                }
+            }
+        }
+    }
 }
