@@ -39,7 +39,7 @@ class GamePlay() : Scene(){
             load(parentView)
         }
         val alien = Alien().apply {
-            load()
+            load(index = Alien.Character.GREEN)
             parentView.addChild(this)
             position(100.0, 395.0)
             walk()

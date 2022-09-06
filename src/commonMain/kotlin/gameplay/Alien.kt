@@ -16,41 +16,98 @@ class Alien : Container(){
         FALL,
         HURT,
         DEAD,
-        GOAL
+        GOAL,
+        STAND
+    }
+    enum class Character{
+        GREEN,
+        PURPLE,
+        PINK,
+        BEIGE,
+        YELLOW
     }
     var status = Status.WALK
     var lastStatus = status
     lateinit var spriteMap: Bitmap
     lateinit var hurtMap: Bitmap
     lateinit var jump: Bitmap
+    lateinit var standBitmap: Bitmap
+    lateinit var headBitmap: Bitmap
     lateinit var walkAnimation: SpriteAnimation
     lateinit var walkSprite: Sprite
     lateinit var hurtAnimation: SpriteAnimation
     lateinit var sprite: Sprite
     var defaultY = 395.0
-    suspend fun load() {
-        spriteMap = resourcesVfs["green_alien_walk.png"].readBitmap()
-        jump = resourcesVfs["green_alien_jump.png"].readBitmap()
-        hurtMap = resourcesVfs["green_alien_hurt.png"].readBitmap()
+    var alienWalkCount = 11
+    var alienWalkSpeed = 0.1
+    suspend fun load(index: Character) {
+        when(index){
+            Character.GREEN ->{
+                alienWalkCount = 11
+                alienWalkSpeed = 0.1
+                standBitmap = resourcesVfs["green_alien_stand.png"].readBitmap()
+                spriteMap = resourcesVfs["green_alien_walk.png"].readBitmap()
+                hurtMap = resourcesVfs["green_alien_hurt.png"].readBitmap()
+                jump = resourcesVfs["green_alien_jump.png"].readBitmap()
+                headBitmap = resourcesVfs["green_alien_head.png"].readBitmap()
+            }
+            Character.PURPLE ->{
+                alienWalkCount = 11
+                alienWalkSpeed = 0.1
+                standBitmap = resourcesVfs["purple_alien_stand.png"].readBitmap()
+                spriteMap = resourcesVfs["purple_alien_walk.png"].readBitmap()
+                hurtMap = resourcesVfs["purple_alien_hurt.png"].readBitmap()
+                jump = resourcesVfs["purple_alien_jump.png"].readBitmap()
+                headBitmap = resourcesVfs["purple_alien_head.png"].readBitmap()
+            }
+            Character.PINK ->{
+                alienWalkCount = 11
+                alienWalkSpeed = 0.1
+                standBitmap = resourcesVfs["pink_alien_stand.png"].readBitmap()
+                spriteMap = resourcesVfs["pink_alien_walk.png"].readBitmap()
+                hurtMap = resourcesVfs["pink_alien_hurt.png"].readBitmap()
+                jump = resourcesVfs["pink_alien_jump.png"].readBitmap()
+                headBitmap = resourcesVfs["pink_alien_head.png"].readBitmap()
+            }
+            Character.BEIGE ->{
+                alienWalkCount = 2
+                alienWalkSpeed = 0.3
+                standBitmap = resourcesVfs["beige_alien_stand.png"].readBitmap()
+                spriteMap = resourcesVfs["beige_alien_walk.png"].readBitmap()
+                hurtMap = resourcesVfs["beige_alien_hurt.png"].readBitmap()
+                jump = resourcesVfs["beige_alien_jump.png"].readBitmap()
+                headBitmap = resourcesVfs["beige_alien_head.png"].readBitmap()
+            }
+            Character.YELLOW ->{
+                alienWalkCount = 2
+                alienWalkSpeed = 0.3
+                standBitmap = resourcesVfs["yellow_alien_stand.png"].readBitmap()
+                spriteMap = resourcesVfs["yellow_alien_walk.png"].readBitmap()
+                hurtMap = resourcesVfs["yellow_alien_hurt.png"].readBitmap()
+                jump = resourcesVfs["yellow_alien_jump.png"].readBitmap()
+                headBitmap = resourcesVfs["yellow_alien_head.png"].readBitmap()
+            }
+        }
         hurtAnimation = SpriteAnimation(
             spriteMap = hurtMap,
-            spriteWidth = 72,
-            spriteHeight = 97
+            spriteWidth = hurtMap.width,
+            spriteHeight = hurtMap.height
         )
         walkAnimation = SpriteAnimation(
             spriteMap = spriteMap,
-            spriteWidth = 72,
-            spriteHeight = 97,
+            spriteWidth = spriteMap.width / alienWalkCount,
+            spriteHeight = spriteMap.height,
             marginTop = 0,
             marginLeft = 0,
-            columns = 11,
+            columns = alienWalkCount,
             rows = 1,
             offsetBetweenColumns = 0,
             offsetBetweenRows = 0
         )
-        walkSprite = sprite(walkAnimation) {
-            spriteDisplayTime = 0.1.seconds
-        }
+        sprite = sprite(standBitmap)
+//        walkSprite = sprite(walkAnimation) {
+//            spriteDisplayTime = 0.1.seconds
+//        }
     }
 
     fun changeStatus() {
@@ -96,6 +153,11 @@ class Alien : Container(){
     }
     fun fail(){
         status = Status.FALL
+    }
+    fun stop(){
+        changeStatus()
+        status = Status.STAND
+        sprite = sprite(standBitmap)
     }
     fun update(){
         when(status) {

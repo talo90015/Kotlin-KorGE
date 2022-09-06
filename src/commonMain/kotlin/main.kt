@@ -17,7 +17,7 @@ suspend fun main() = Korge(Korge.Config(module = ConfigModule)) object ConfigMod
         override val bgcolor: RGBA = Colors["#2b2b2b"]
         override val size = SizeInt(960, 540)
         override val windowSize = SizeInt(1280, 768)
-        override val mainScene = GamePlay::class
+        override val mainScene = Splash::class
         override suspend fun AsyncInjector.configure(){
             mapPrototype { Splash() }
             mapPrototype { Menu() }
