@@ -86,6 +86,9 @@ object ItemManager {
         items.forEach {
             it?.stop()
         }
+        items.clear()
+        scoreItem.clear()
+        hurtItem.clear()
     }
     fun setCollision(alien: Alien, parentView: Container){
         items.forEach {

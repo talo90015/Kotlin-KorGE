@@ -5,7 +5,7 @@ import com.soywiz.korev.Key
 import com.soywiz.korge.animate.*
 import com.soywiz.korge.input.keys
 import com.soywiz.korge.input.onClick
-import com.soywiz.korge.scene.Scene
+import com.soywiz.korge.scene.*
 import com.soywiz.korge.view.*
 import com.soywiz.korio.async.delay
 import com.soywiz.korio.async.launch
@@ -14,10 +14,11 @@ import gameplay.*
 
 
 class GamePlay() : Scene(){
-
+    lateinit var background: Background
     override suspend fun SContainer.sceneInit(){
+        background = Background().apply {load()}
+        addChild(background)
 
-        addChild(Background().apply { load() })
         val blood = Blood().apply { load()}
         addChild(blood)
         blood.initPosition()
@@ -39,7 +40,8 @@ class GamePlay() : Scene(){
             load(parentView)
         }
         val alien = Alien().apply {
-            load(index = Alien.Character.GREEN)
+//            load(index = Alien.Character.GREEN)
+            load(ShareData.selectRunAlien)
             parentView.addChild(this)
             position(100.0, 395.0)
             walk()
@@ -54,6 +56,7 @@ class GamePlay() : Scene(){
                 }
             }
         }
+
         ItemManager.setCollision(alien, this)
 //        alien.apply {
 //            load()
@@ -70,7 +73,35 @@ class GamePlay() : Scene(){
 //        alien.alignBottomToTopOf(ItemManager.baseFloor!!)
 //        alien.defaultY = alien.y
 //        alien.x = ItemManager.baseWidth
-
+        fun goToGameOver(){
+            launchImmediately {
+                delay(2.seconds)
+                sceneContainer.changeTo<GameOver>()
+            }
+        }
+        fun checkGameOver(){
+            if (blood.nowValue == 0){
+                background.stop()
+                ItemManager.stop()
+                timer.stop()
+                alien.dead()
+                ShareData.run {
+                    gameScore = score.nowValue
+                    isGameOverSuccess = false
+                }
+                goToGameOver()
+            }else if (timer.totalTime == 0){
+                background.stop()
+                ItemManager.stop()
+                timer.stop()
+                alien.goal()
+                ShareData.run {
+                    gameScore = score.nowValue
+                    isGameOverSuccess = true
+                }
+                goToGameOver()
+            }
+        }
         keys {
             down (Key.UP){
                 alien.jump()
@@ -82,6 +113,7 @@ class GamePlay() : Scene(){
             blood.update()
             score.update()
             timer.update()
+            checkGameOver()
         }
         timer.start()
         addOptFixedUpdater(1.seconds) {
