@@ -16,7 +16,7 @@ class GameTime: Container() {
     lateinit var timerHead: Image
     lateinit var timerBitmapSlice: Bitmap
     var timer = arrayListOf<Image>()
-    val initTimer = 7
+    val initTimer = 3
     var totalTime = initTimer
     var isStop = true
 
