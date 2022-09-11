@@ -23,3 +23,9 @@ korge {
 	//targetIos()
 	//targetAndroidIndirect() // targetAndroidDirect()
 }
+dependencies {
+    add("commonMainApi", "com.google.code.gson:gson:2.8.6")
+//    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.4.0")
+    add("commonMainApi", "org.jetbrains.kotlinx:kotlinx-serialization-json:1.4.0")
+    add("commonMainApi", "org.jetbrains.kotlinx:kotlinx-serialization-json:1.3.2")
+}

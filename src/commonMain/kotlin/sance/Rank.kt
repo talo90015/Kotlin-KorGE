@@ -1,6 +1,7 @@
 package sance
 
 import ConfigModule
+import api.*
 import com.soywiz.korge.input.*
 import com.soywiz.korge.scene.Scene
 import com.soywiz.korge.ui.*
@@ -15,6 +16,7 @@ import com.soywiz.korio.file.*
 import com.soywiz.korio.file.std.*
 import com.soywiz.korma.geom.*
 import gameplay.*
+import model.*
 import java.awt.font.ImageGraphicAttribute
 
 class Rank() : Scene() {
@@ -83,6 +85,10 @@ class Rank() : Scene() {
                     sceneContainer.changeTo<Menu>()
                 }
             }
+        }
+        launch {
+            UserScoreAPI.upload(UserScore(user = "Peko", score = 20))
+            UserScoreAPI.getRankList()
         }
     }
     suspend fun getHighestScore(): Int{
